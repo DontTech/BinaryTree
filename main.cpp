@@ -73,6 +73,7 @@ int main()
         }
 
         std::cout << bt.DepthFirstTraversal(Order::Preorder) << std::endl;
+        std::cout << bt.DepthFirstTraversal(Order::Inorder) << std::endl;
         std::cout << bt.DepthFirstTraversal(Order::Postorder) << std::endl;
         std::cout << "Size = " << bt.Size() << std::endl;
         std::cout << "Depth = " << bt.Depth() << std::endl;
@@ -85,6 +86,7 @@ int main()
     }
 
     std::cout << bt.DepthFirstTraversal(Order::Preorder) << std::endl;
+    std::cout << bt.DepthFirstTraversal(Order::Inorder) << std::endl;
     std::cout << bt.DepthFirstTraversal(Order::Postorder) << std::endl;
     std::cout << "Size = " << bt.Size() << std::endl;
     std::cout << "Depth = " << bt.Depth() << std::endl;

@@ -6,13 +6,13 @@
 #include <stdexcept>
 #include "BinaryTree.h"
 
-template < typename Node, bool isStoringDepth > struct BinaryTreeClassHelper
+template < template < class > class Node, typename T, bool isStoringDepth > struct BinaryTreeClassHelper
 {
-    static void Add(Node **_head, int _value)
+    static void Add(Node < T > **_head, T _value)
     {
         if (*_head == nullptr)
         {
-            auto *node = new Node();
+            auto *node = new Node < T > ();
             node->left  = nullptr;
             node->right = nullptr;
             node->value = _value;
@@ -22,16 +22,16 @@ template < typename Node, bool isStoringDepth > struct BinaryTreeClassHelper
         {
             if ((*_head)->value < _value)
             {
-                BinaryTreeClassHelper < Node, isStoringDepth > ::Add(&((*_head)->right), _value);
+                BinaryTreeClassHelper < Node, T, isStoringDepth > ::Add(&((*_head)->right), _value);
             }
             else
             {
-                BinaryTreeClassHelper < Node, isStoringDepth > ::Add(&((*_head)->left), _value);
+                BinaryTreeClassHelper < Node, T, isStoringDepth > ::Add(&((*_head)->left), _value);
             }
         }
     }
 
-    static size_t Depth(const Node *_head)
+    static size_t Depth(const Node < T > *_head)
     {
         if (_head == nullptr)
         {
@@ -40,19 +40,19 @@ template < typename Node, bool isStoringDepth > struct BinaryTreeClassHelper
         else
         {
             return 1 + std::max < size_t >
-                   (BinaryTreeClassHelper < Node, isStoringDepth > ::Depth(_head->left), BinaryTreeClassHelper < Node,
+                   (BinaryTreeClassHelper < Node, T, isStoringDepth > ::Depth(_head->left), BinaryTreeClassHelper < Node, T,
                     isStoringDepth > ::Depth(_head->right));
         }
     }
 };
 
-template < typename Node > struct BinaryTreeClassHelper < Node, true >
+template < template < class > class Node, typename T > struct BinaryTreeClassHelper < Node, T, true >
 {
-    static void Add(Node **_head, int _value)
+    static void Add(Node < T > **_head, T _value)
     {
         if (*_head == nullptr)
         {
-            auto *node = new Node();
+            auto *node = new Node < T > ();
             node->left  = nullptr;
             node->right = nullptr;
             node->value = _value;
@@ -63,18 +63,18 @@ template < typename Node > struct BinaryTreeClassHelper < Node, true >
         {
             if ((*_head)->value < _value)
             {
-                BinaryTreeClassHelper < Node, true > ::Add(&((*_head)->right), _value);
+                BinaryTreeClassHelper < Node, T, true > ::Add(&((*_head)->right), _value);
                 (*_head)->depth = (*_head)->right->depth + 1;
             }
             else
             {
-                BinaryTreeClassHelper < Node, true > ::Add(&((*_head)->left), _value);
+                BinaryTreeClassHelper < Node, T, true > ::Add(&((*_head)->left), _value);
                 (*_head)->depth = (*_head)->left->depth + 1;
             }
         }
     }
 
-    static size_t Depth(const Node *_head)
+    static size_t Depth(const Node < T > *_head)
     {
         if (_head == nullptr)
         {
@@ -86,25 +86,29 @@ template < typename Node > struct BinaryTreeClassHelper < Node, true >
         }
     }
 };
-template < typename Node > BinaryTreeClass < Node, true > ::BinaryTreeClass() : mRoot(nullptr) {}
-template < typename Node > BinaryTreeClass < Node,
-true > ::BinaryTreeClass(const std::initializer_list < int > _values) : mRoot(nullptr) {
+template < template < class > class Node, typename T > BinaryTreeClass < Node < T >, true > ::BinaryTreeClass() : mRoot(
+                                                                                                                      nullptr)
+{}
+template < template < class > class Node, typename T > BinaryTreeClass < Node < T >, true > ::BinaryTreeClass(
+    const std::initializer_list < T > _values) : mRoot(nullptr) {
     for (auto value : _values)
     {
-        Add < NodeTraits < Node > ::isStoringDepth > (&mRoot, value);
+        Add < NodeTraits < Node < T >> ::isStoringDepth > (&mRoot, value);
     }
 }
-template < typename Node > BinaryTreeClass < Node, true > ::BinaryTreeClass(const BinaryTreeClass &_bt) : BinaryTreeClass() {
+template < template < class > class Node, typename T > BinaryTreeClass < Node < T >, true > ::BinaryTreeClass(
+    const BinaryTreeClass &_bt) : BinaryTreeClass() {
     mRoot = Copy(_bt.mRoot);
 }
-template < typename Node > BinaryTreeClass < Node, true > ::BinaryTreeClass(BinaryTreeClass && _bt) noexcept {
+template < template < class > class Node, typename T > BinaryTreeClass < Node < T >, true > ::BinaryTreeClass(
+    BinaryTreeClass && _bt) noexcept {
     using std::swap;
     swap(mRoot, _bt.mRoot);
 }
-template < typename Node > BinaryTreeClass < Node, true > ::~BinaryTreeClass() {
+template < template < class > class Node, typename T > BinaryTreeClass < Node < T >, true > ::~BinaryTreeClass() {
     Clear();
 }
-template < typename Node > BinaryTreeClass < Node, true > &BinaryTreeClass < Node,
+template < template < class > class Node, typename T > BinaryTreeClass < Node < T >, true > &BinaryTreeClass < Node < T >,
 true > ::operator = (const BinaryTreeClass &_bt) {
     if (this != &_bt)
     {
@@ -114,7 +118,7 @@ true > ::operator = (const BinaryTreeClass &_bt) {
 
     return *this;
 }
-template < typename Node > BinaryTreeClass < Node, true > &BinaryTreeClass < Node,
+template < template < class > class Node, typename T > BinaryTreeClass < Node < T >, true > &BinaryTreeClass < Node < T >,
 true > ::operator = (BinaryTreeClass && _bt)noexcept {
     if (this != &_bt)
     {
@@ -125,25 +129,25 @@ true > ::operator = (BinaryTreeClass && _bt)noexcept {
 
     return *this;
 }
-template < typename Node > void BinaryTreeClass < Node, true > ::Add(const int _value) {
-    Add < NodeTraits < Node > ::isStoringDepth > (&mRoot, _value);
+template < template < class > class Node, typename T > void BinaryTreeClass < Node < T >, true > ::Add(const T _value) {
+    Add < NodeTraits < Node < T >> ::isStoringDepth > (&mRoot, _value);
 }
-template < typename Node > bool BinaryTreeClass < Node, true > ::Delete(const int _value) {
+template < template < class > class Node, typename T > bool BinaryTreeClass < Node < T >, true > ::Delete(const T _value) {
     return Delete(&mRoot, _value);
 }
-template < typename Node > void BinaryTreeClass < Node, true > ::Clear() {
+template < template < class > class Node, typename T > void BinaryTreeClass < Node < T >, true > ::Clear() {
     // Faster than calling Delete() repeatedly as we don't care about the structural consistency while clearing
     Clear(mRoot);
     mRoot = nullptr;
 }
-template < typename Node > int BinaryTreeClass < Node, true > ::Max() const {
+template < template < class > class Node, typename T > T BinaryTreeClass < Node < T >, true > ::Max() const {
     if (mRoot == nullptr)
     {
         throw std::logic_error("No element to calculate max.");
     }
     else
     {
-        Node *node = mRoot;
+        Node < T > *node = mRoot;
         while (node->right != nullptr)
         {
             node = node->right;
@@ -152,14 +156,14 @@ template < typename Node > int BinaryTreeClass < Node, true > ::Max() const {
         return node->value;
     }
 }
-template < typename Node > int BinaryTreeClass < Node, true > ::Min() const {
+template < template < class > class Node, typename T > T BinaryTreeClass < Node < T >, true > ::Min() const {
     if (mRoot == nullptr)
     {
         throw std::logic_error("No element to calculate min.");
     }
     else
     {
-        Node *node = mRoot;
+        Node < T > *node = mRoot;
         while (node->left != nullptr)
         {
             node = node->left;
@@ -168,24 +172,25 @@ template < typename Node > int BinaryTreeClass < Node, true > ::Min() const {
         return node->value;
     }
 }
-template < typename Node > size_t BinaryTreeClass < Node, true > ::Size() const {
+template < template < class > class Node, typename T > size_t BinaryTreeClass < Node < T >, true > ::Size() const {
     return Size(mRoot);
 }
-template < typename Node > size_t BinaryTreeClass < Node, true > ::Depth() const {
-    return Depth < NodeTraits < Node > ::isStoringDepth > (mRoot);
+template < template < class > class Node, typename T > size_t BinaryTreeClass < Node < T >, true > ::Depth() const {
+    return Depth < NodeTraits < Node < T >> ::isStoringDepth > (mRoot);
 }
-template < typename Node > std::string BinaryTreeClass < Node, true > ::BreadthFirstTraversal() const {
+template < template < class > class Node, typename T > std::string BinaryTreeClass < Node < T >,
+true > ::BreadthFirstTraversal() const {
     std::string output = "BFS:";
     if (nullptr == mRoot)
     {
         return output;
     }
 
-    std::queue < Node * > q;
+    std::queue < Node < T > * > q;
     q.push(mRoot);
     while (!q.empty())
     {
-        Node *node = q.front();
+        Node < T > *node = q.front();
         q.pop();
         if (nullptr != node->left)
         {
@@ -201,18 +206,19 @@ template < typename Node > std::string BinaryTreeClass < Node, true > ::BreadthF
 
     return output;
 }
-template < typename Node > std::string BinaryTreeClass < Node, true > ::DepthFirstTraversal() const {
+template < template < class > class Node, typename T > std::string BinaryTreeClass < Node < T >,
+true > ::DepthFirstTraversal() const {
     std::string output = "DFS (preorder):";
     if (nullptr == mRoot)
     {
         return output;
     }
 
-    std::stack < Node * > s;
+    std::stack < Node < T > * > s;
     s.push(mRoot);
     while (!s.empty())
     {
-        Node *node = s.top();
+        Node < T > *node = s.top();
         s.pop();
         if (nullptr != node->right)
         {
@@ -228,7 +234,8 @@ template < typename Node > std::string BinaryTreeClass < Node, true > ::DepthFir
 
     return output;
 }
-template < typename Node > std::string BinaryTreeClass < Node, true > ::DepthFirstTraversal(const Order &_order) const {
+template < template < class > class Node, typename T > std::string BinaryTreeClass < Node < T >,
+true > ::DepthFirstTraversal(const Order &_order) const {
     std::string output = "DFS ";
 
     switch (_order) {
@@ -248,33 +255,35 @@ template < typename Node > std::string BinaryTreeClass < Node, true > ::DepthFir
     DepthFirstTraversal(mRoot, _order, output);
     return output;
 }
-template < typename Node > Node * BinaryTreeClass < Node, true > ::Copy(Node * _head) {
+template < template < class > class Node, typename T > Node < T > *BinaryTreeClass < Node < T >, true > ::Copy(
+    Node < T > *_head) {
     if (_head == nullptr)
     {
         return nullptr;
     }
 
-    auto *node = new Node();
+    auto *node = new Node < T > ();
     node->left  = Copy(_head->left);
     node->right = Copy(_head->right);
     node->value = _head->value;
     return node;
 }
-template < typename Node > template < bool isStoringDepth > void BinaryTreeClass < Node, true > ::Add(Node * *_head,
-                                                                                                      const int _value) {
-    BinaryTreeClassHelper < Node, isStoringDepth > ::Add(_head, _value);
+template < template < class > class Node, typename T > template < bool isStoringDepth > void BinaryTreeClass < Node < T >,
+true > ::Add(Node < T > **_head, const T _value) {
+    BinaryTreeClassHelper < Node, T, isStoringDepth > ::Add(_head, _value);
 }
-template < typename Node > bool BinaryTreeClass < Node, true > ::Delete(Node * *_head, const int _value) {
+template < template < class > class Node, typename T > bool BinaryTreeClass < Node < T >, true > ::Delete(Node < T > **_head,
+                                                                                                          const T _value) {
     if (*_head == nullptr)
     {
         return false;
     }
     if ((*_head)->value == _value)
     {
-        Node *delNode = *_head;
-        Node *parentNode;
-        if (Depth < NodeTraits < Node > ::isStoringDepth > ((*_head)->left) < Depth < NodeTraits < Node > ::isStoringDepth >
-            ((*_head)->right))
+        Node < T > *delNode = *_head;
+        Node < T > *parentNode;
+        if (Depth < NodeTraits < Node < T >> ::isStoringDepth > ((*_head)->left) < Depth < NodeTraits < Node <
+            T >> ::isStoringDepth > ((*_head)->right))
         {
             // Replace with next largest number (leftmost node on right side)
             parentNode = (*_head)->right;
@@ -295,7 +304,7 @@ template < typename Node > bool BinaryTreeClass < Node, true > ::Delete(Node * *
                 else
                 {
                     // We need to find the leftmost node
-                    Node *childNode = parentNode->left;
+                    Node < T > *childNode = parentNode->left;
                     while (childNode->left != nullptr)
                     {
                         parentNode = childNode;
@@ -330,7 +339,7 @@ template < typename Node > bool BinaryTreeClass < Node, true > ::Delete(Node * *
                 else
                 {
                     // We need to find the rightmost node
-                    Node *childNode = parentNode->right;
+                    Node < T > *childNode = parentNode->right;
                     while (childNode->right != nullptr)
                     {
                         parentNode = childNode;
@@ -357,7 +366,7 @@ template < typename Node > bool BinaryTreeClass < Node, true > ::Delete(Node * *
         return Delete(&((*_head)->left), _value);
     }
 }
-template < typename Node > void BinaryTreeClass < Node, true > ::Clear(Node * _head) {
+template < template < class > class Node, typename T > void BinaryTreeClass < Node < T >, true > ::Clear(Node < T > *_head) {
     if (_head == nullptr)
     {
         return;
@@ -367,7 +376,8 @@ template < typename Node > void BinaryTreeClass < Node, true > ::Clear(Node * _h
     Clear(_head->right);
     delete _head;
 }
-template < typename Node > size_t BinaryTreeClass < Node, true > ::Size(const Node * _head) const {
+template < template < class > class Node, typename T > size_t BinaryTreeClass < Node < T >, true > ::Size(
+    const Node < T > *_head) const {
     if (_head == nullptr)
     {
         return 0;
@@ -377,13 +387,14 @@ template < typename Node > size_t BinaryTreeClass < Node, true > ::Size(const No
         return 1 + Size(_head->left) + Size(_head->right);
     }
 }
-template < typename Node > template < bool isStoringDepth > size_t BinaryTreeClass < Node,
-true > ::Depth(const Node * _head) const {
-    BinaryTreeClassHelper < Node, isStoringDepth > ::Depth(_head);
+template < template < class > class Node, typename T > template < bool isStoringDepth > size_t BinaryTreeClass < Node < T >,
+true > ::Depth(const Node < T > *_head) const {
+    BinaryTreeClassHelper < Node, T, isStoringDepth > ::Depth(_head);
 }
-template < typename Node > void BinaryTreeClass < Node, true > ::DepthFirstTraversal(const Node * _node,
-                                                                                     const Order &_order,
-                                                                                     std::string& _output) const {
+template < template < class > class Node, typename T > void BinaryTreeClass < Node < T >, true > ::DepthFirstTraversal(
+    const Node < T > *_node,
+    const Order &_order,
+    std::string& _output) const {
     if (nullptr == _node)
     {
         return;
