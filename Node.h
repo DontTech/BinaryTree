@@ -1,7 +1,4 @@
-#ifndef BINARYTREE_NODE_H
-#define BINARYTREE_NODE_H
-
-#include <cstddef>
+#pragma once
 
 template <typename T>
 struct SimpleBTNode {
@@ -46,5 +43,3 @@ struct NodeTraits<BTNodeTwoWay<T>> {
     static const bool isStoringDepth = false;
     static const bool isPointingToParent = true;
 };
-
-#endif // BINARYTREE_NODE_H

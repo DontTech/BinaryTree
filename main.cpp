@@ -1,4 +1,4 @@
-#include "BinaryTree.tpp"
+#include "BinaryTree.h"
 #include "Node.h"
 #include <chrono>
 #include <iostream>
@@ -46,7 +46,7 @@ int main()
     const int MAX_NUMBER = 20;
     int numbersToDelete[MAX_DELETE];
     size_t idx = 0;
-    for (size_t i = 0; i < 10; ++i) {
+    for (size_t i = 0; i < 2 * MAX_NUMBER / 3; ++i) {
         int number = static_cast<int>(random_engine()) % MAX_NUMBER;
         bt.Add(number);
         if ((idx < MAX_DELETE) && (random_engine() % 1 == 0)) {
@@ -55,7 +55,9 @@ int main()
         }
     }
 
+    std::cout << bt.BreadthFirstTraversal() << std::endl;
     std::cout << bt.DepthFirstTraversal(Order::Preorder) << std::endl;
+    std::cout << bt.DepthFirstTraversal(Order::Inorder) << std::endl;
     std::cout << bt.DepthFirstTraversal(Order::Postorder) << std::endl;
     std::cout << "Size = " << bt.Size() << std::endl;
     std::cout << "Depth = " << bt.Depth() << std::endl;
@@ -68,6 +70,7 @@ int main()
             throw std::logic_error("How is this even possible?");
         }
 
+        std::cout << bt.BreadthFirstTraversal() << std::endl;
         std::cout << bt.DepthFirstTraversal(Order::Preorder) << std::endl;
         std::cout << bt.DepthFirstTraversal(Order::Inorder) << std::endl;
         std::cout << bt.DepthFirstTraversal(Order::Postorder) << std::endl;
@@ -79,6 +82,7 @@ int main()
         std::cout << "Deleting a randomly generated number " << number << ": " << (bt.Delete(number) ? "deleted" : "not found") << std::endl;
     }
 
+    std::cout << bt.BreadthFirstTraversal() << std::endl;
     std::cout << bt.DepthFirstTraversal(Order::Preorder) << std::endl;
     std::cout << bt.DepthFirstTraversal(Order::Inorder) << std::endl;
     std::cout << bt.DepthFirstTraversal(Order::Postorder) << std::endl;
